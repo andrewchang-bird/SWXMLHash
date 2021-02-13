@@ -68,7 +68,7 @@ class XMLParsingTests: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
 
-        xml = SWXMLHash.parse(xmlToParse)
+        xml = XMLHash.parse(xmlToParse)
     }
 
     func testShouldBeAbleToParseIndividualElements() {
@@ -135,7 +135,7 @@ class XMLParsingTests: XCTestCase {
 
     func testShouldBeAbleToLookUpElementsByNameAndAttributeCaseInsensitive() {
         do {
-            let xmlInsensitive = SWXMLHash.config({ config in
+            let xmlInsensitive = XMLHash.config({ config in
                 config.caseInsensitive = true
             }).parse(xmlToParse)
             let value = try xmlInsensitive["rOOt"]["catalOg"]["bOOk"].withAttribute("iD", "Bk102")["authOr"].element?.text
@@ -178,7 +178,7 @@ class XMLParsingTests: XCTestCase {
 
     func testShouldBeAbleToIterateOverMixedContent() {
         let mixedContentXml = "<html><body><p>mixed content <i>iteration</i> support</body></html>"
-        let parsed = SWXMLHash.parse(mixedContentXml)
+        let parsed = XMLHash.parse(mixedContentXml)
         let element = parsed["html"]["body"]["p"].element
         XCTAssertNotNil(element)
         if let element = element {
@@ -220,13 +220,13 @@ class XMLParsingTests: XCTestCase {
         ]
 
         for (index, mixedContentXml) in mixedContentXmlInputs.enumerated() {
-            XCTAssertEqual(SWXMLHash.parse(mixedContentXml).element!.recursiveText, recursiveTextOutputs[index])
+            XCTAssertEqual(XMLHash.parse(mixedContentXml).element!.recursiveText, recursiveTextOutputs[index])
         }
     }
 
     func testShouldHandleInterleavingXMLElements() {
         let interleavedXml = "<html><body><p>one</p><div>two</div><p>three</p><div>four</div></body></html>"
-        let parsed = SWXMLHash.parse(interleavedXml)
+        let parsed = XMLHash.parse(interleavedXml)
 
         let result = parsed["html"]["body"].children.map({ $0.element!.text }).joined(separator: ", ")
         XCTAssertEqual(result, "one, two, three, four")
@@ -234,14 +234,14 @@ class XMLParsingTests: XCTestCase {
 
     func testShouldBeAbleToProvideADescriptionForTheDocument() {
         let descriptionXml = "<root><foo><what id=\"myId\">puppies</what></foo></root>"
-        let parsed = SWXMLHash.parse(descriptionXml)
+        let parsed = XMLHash.parse(descriptionXml)
 
         XCTAssertEqual(parsed.description, "<root><foo><what id=\"myId\">puppies</what></foo></root>")
     }
 
     func testShouldBeAbleToGetInnerXML() {
         let testXML = "<root><foo><what id=\"myId\">puppies</what><elems><elem>1</elem><elem>2</elem></elems></foo></root>"
-        let parsed = SWXMLHash.parse(testXML)
+        let parsed = XMLHash.parse(testXML)
 
         XCTAssertEqual(parsed["root"]["foo"].element!.innerXML, "<what id=\"myId\">puppies</what><elems><elem>1</elem><elem>2</elem></elems>")
     }
@@ -324,7 +324,7 @@ class XMLParsingTests: XCTestCase {
             </root>
         """
 
-        let parser = SWXMLHash.parse(xmlToParse)
+        let parser = XMLHash.parse(xmlToParse)
 
         let subIndexer = parser["root"].filterChildren { _, index in index >= 2 && index <= 5 }
 
@@ -369,7 +369,7 @@ class XMLParsingTests: XCTestCase {
     func testShouldThrowErrorForInvalidXML() {
         let invalidXML = "<uh oh>what is this"
         var err: ParsingError?
-        let parser = SWXMLHash.config { config in
+        let parser = XMLHash.config { config in
             config.detectParsingErrors = true
         }.parse(invalidXML)
 
