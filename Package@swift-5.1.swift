@@ -42,8 +42,5 @@ let package = Package(
             name: "SWXMLHashTests",
             dependencies: ["SWXMLHash"]
         )
-    ],
-    swiftLanguageVersions: [
-        .v5
     ]
 )
